@@ -1,30 +1,27 @@
 package com.example.test_lab_week_12
 
+// Import MovieService yang benar (sesuaikan jika package berbeda)
 import MovieService
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import com.example.test_lab_week_12.model.Movie
 
+// Import wajib untuk Coroutines Flow
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
+
 class MovieRepository(private val movieService: MovieService) {
+    // API Key Anda
     private val apiKey = "500aab151a021843ccce13851cb91724"
 
-    // LiveData untuk list film
-    private val movieLiveData = MutableLiveData<List<Movie>>()
-    val movies: LiveData<List<Movie>>
-        get() = movieLiveData
+    // INSTRUKSI: LiveData (movies & error) telah DIHAPUS[cite: 171].
 
-    // LiveData untuk error message
-    private val errorLiveData = MutableLiveData<String>()
-    val error: LiveData<String>
-        get() = errorLiveData
-
-    // fetch movies dari API
-    suspend fun fetchMovies() {
-        try {
-            val popularMovies = movieService.getPopularMovies(apiKey)
-            movieLiveData.postValue(popularMovies.results)
-        } catch (exception: Exception) {
-            errorLiveData.postValue("An error occurred: ${exception.message}")
-        }
+    // Fungsi fetchMovies yang baru menggunakan Flow [cite: 177-186]
+    fun fetchMovies(): Flow<List<Movie>> {
+        return flow {
+            // Mengambil data dari API lalu di-emit (dikirim) ke stream
+            val response = movieService.getPopularMovies(apiKey)
+            emit(response.results)
+        }.flowOn(Dispatchers.IO) // Menjalankan proses ini di Background Thread (IO)
     }
 }
