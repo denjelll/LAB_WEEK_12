@@ -46,41 +46,37 @@ class MainActivity : AppCompatActivity() {
         // --- BAGIAN IMPLEMENTASI FLOW (Part 2) & ASSIGNMENT (Tugas) ---
 
         // lifecycleScope is a lifecycle-aware coroutine scope [cite: 219]
+
         lifecycleScope.launch {
-            // repeatOnLifecycle is a lifecycle-aware coroutine builder [cite: 221]
-            // Lifecycle.State.STARTED means that the coroutine will run when the activity is started
             repeatOnLifecycle(Lifecycle.State.STARTED) {
 
-                // 1. Mengambil data list film
+                // --- BAGIAN INI YANG DIMODIFIKASI ---
                 launch {
-                    // collect the list of movies from the StateFlow [cite: 224]
                     movieViewModel.popularMovies.collect { movies ->
-
-                        // LOGIKA ASSIGNMENT (HALAMAN 8):
-                        // "Implement the same data filter (descending by popularity) to the State Flow" [cite: 249]
+                        // 1. Ambil tahun saat ini
                         val currentYear = Calendar.getInstance().get(Calendar.YEAR).toString()
 
+                        // 2. Lakukan Filter dan Sorting (Sesuai tugas hal 8)
                         val filteredMovies = movies
                             .filter { movie ->
-                                // Filter film yang rilis tahun ini
+                                // Ambil hanya film yang rilis tahun ini
                                 movie.releaseDate?.startsWith(currentYear) == true
                             }
-                            .sortedByDescending { it.popularity } // Sort berdasarkan popularitas
+                            .sortedByDescending {
+                                // Urutkan berdasarkan popularitas tertinggi
+                                it.popularity
+                            }
 
-                        // add the list of movies to the adapter
+                        // 3. Masukkan data yang sudah difilter ke adapter
                         movieAdapter.addMovies(filteredMovies)
                     }
                 }
+                // -------------------------------------
 
-                // 2. Mengambil pesan error
                 launch {
-                    // collect the error message from the StateFlow [cite: 230]
                     movieViewModel.error.collect { error ->
-                        // if an error occurs, show a Snackbar with the error [cite: 231]
                         if (error.isNotEmpty()) {
-                            Snackbar.make(
-                                recyclerView, error, Snackbar.LENGTH_LONG
-                            ).show()
+                            Snackbar.make(recyclerView, error, Snackbar.LENGTH_LONG).show()
                         }
                     }
                 }
