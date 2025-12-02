@@ -10,9 +10,10 @@ import com.squareup.moshi.JsonClass
 @Entity(tableName = "movies")
 data class Movie(
     @PrimaryKey
-    val adult: Boolean = false,
-    val backdrop_path: String? = "",
+    @Json(name = "id")
     val id: Int = 0,
+    val adult: Boolean = false,
+    val backdrop_path: String? = null,
     @field:Json(name = "original_language")
     val originalLanguage: String? = null,
     @field:Json(name = "original_title")

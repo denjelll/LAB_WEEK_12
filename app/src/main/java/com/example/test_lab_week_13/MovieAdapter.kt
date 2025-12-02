@@ -20,7 +20,9 @@ class MovieAdapter(private val clickListener: MovieClickListener) :
         return MovieViewHolder(view)
     }
 
-    override fun getItemCount() = movies.size
+    override fun getItemCount() : Int {
+        return movies.size
+    }
 
     override fun onBindViewHolder(holder: MovieViewHolder, position: Int) {
         val movie = movies[position]

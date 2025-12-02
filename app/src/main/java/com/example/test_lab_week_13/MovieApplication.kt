@@ -23,11 +23,10 @@ class MovieApplication : Application() {
         )
 // create a MovieRepository instance
         val movieDatabase =
-        MovieDatabase.getInstance(applicationContext)
+            MovieDatabase.getInstance(applicationContext)
 
         // create a MovieRepository instance
         movieRepository =
             MovieRepository(movieService, movieDatabase)
-
     }
 }

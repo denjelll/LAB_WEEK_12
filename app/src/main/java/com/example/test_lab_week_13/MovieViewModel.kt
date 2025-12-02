@@ -36,19 +36,23 @@ class MovieViewModel(private val movieRepository: MovieRepository) : ViewModel()
                     _error.value = "An exception occurred: ${exception.message}"
                 }
                 .collect { movies ->
-                    // --- ASSIGNMENT LOGIC START ---
-                    val currentYear = Calendar.getInstance().get(Calendar.YEAR).toString()
-
-                    val filteredAndSortedMovies = movies
-                        .filter { movie ->
-                            movie.releaseDate?.startsWith(currentYear) == true
-                        }
-                        .sortedByDescending { it.popularity }
-
-                    // Logic update tetap sama, update variabel private-nya
-                    _popularMovies.value = filteredAndSortedMovies
-                    // --- ASSIGNMENT LOGIC END ---
+                    // Jangan difilter dulu, tampilkan semua apa adanya
+                    _popularMovies.value = movies.sortedByDescending { it.popularity }
                 }
+//                .collect { movies ->
+//                    // --- ASSIGNMENT LOGIC START ---
+//                    val currentYear = Calendar.getInstance().get(Calendar.YEAR).toString()
+//
+//                    val filteredAndSortedMovies = movies
+//                        .filter { movie ->
+//                            movie.releaseDate?.startsWith(currentYear) == true
+//                        }
+//                        .sortedByDescending { it.popularity }
+//
+//                    // Logic update tetap sama, update variabel private-nya
+//                    _popularMovies.value = filteredAndSortedMovies
+//                    // --- ASSIGNMENT LOGIC END ---
+//                }
         }
     }
 }

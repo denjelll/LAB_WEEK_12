@@ -9,6 +9,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.RecyclerView
 import com.example.test_lab_week_13.databinding.ActivityMainBinding
 import com.example.test_lab_week_13.model.Movie
+// Import yang tidak terpakai (Snackbar, lifecycleScope, dll) dihapus agar lebih bersih
 
 class MainActivity : AppCompatActivity() {
     private val movieAdapter by lazy {
