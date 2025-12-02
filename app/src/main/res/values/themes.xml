@@ -1,10 +1,13 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Base application theme. -->
     <style name="Base.Theme.TEST_LAB_WEEK_12" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Customize your light theme here. -->
-        <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
-        <item name="colorAccent">@color/colorAccent</item>
+
+        <item name="colorPrimary">@color/lab_yellow</item>
+
+        <item name="android:windowLightStatusBar">true</item>
+
+        <item name="titleTextColor">@color/black</item>
+
+        <item name="colorControlNormal">@color/black</item>
     </style>
 
     <style name="Theme.TEST_LAB_WEEK_12" parent="Base.Theme.TEST_LAB_WEEK_12" />

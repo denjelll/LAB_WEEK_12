@@ -3,4 +3,8 @@
     <color name="colorPrimary">#FFEB3B</color>
     <color name="colorPrimaryDark">#FBC02D</color>
     <color name="colorAccent">#03DAC5</color>
+    <color name="purple_200">#FFBB86FC</color>
+    <color name="white">#FFFFFFFF</color>
+    <color name="lab_yellow">#FFEB3B</color>
+    <color name="black">#FF000000</color>
 </resources>

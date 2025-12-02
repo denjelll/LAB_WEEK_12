@@ -19,6 +19,19 @@ class DetailsActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_details)
+        // 1. Inisialisasi Toolbar
+        val toolbar: androidx.appcompat.widget.Toolbar = findViewById(R.id.detail_toolbar)
+        setSupportActionBar(toolbar)
+
+        // 2. Aktifkan Tombol Back (Panah)
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        supportActionBar?.setDisplayShowHomeEnabled(true)
+
+        // Ambil data dari Intent (Contoh)
+        val title = intent.getStringExtra(EXTRA_TITLE)
+
+        // Set Judul di Toolbar
+        supportActionBar?.title = title ?: "Movie Detail"
 
         val titleText: TextView = findViewById(R.id.title_text)
         val releaseText: TextView = findViewById(R.id.release_text)
@@ -40,5 +53,10 @@ class DetailsActivity : AppCompatActivity() {
             .fitCenter()
             .into(poster)
 
+    }
+
+    override fun onSupportNavigateUp(): Boolean {
+        onBackPressedDispatcher.onBackPressed() // atau finish()
+        return true
     }
 }
