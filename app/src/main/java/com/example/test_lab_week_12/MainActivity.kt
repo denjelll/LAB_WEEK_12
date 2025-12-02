@@ -3,11 +3,15 @@ package com.example.test_lab_week_12
 import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.RecyclerView
 import com.example.test_lab_week_12.model.Movie
 import com.google.android.material.snackbar.Snackbar
+import kotlinx.coroutines.launch
 import java.util.Calendar
 
 class MainActivity : AppCompatActivity() {
@@ -22,9 +26,13 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        // Setup Toolbar Title
         supportActionBar?.title = "LAB WEEK 12"
+
         val recyclerView: RecyclerView = findViewById(R.id.movie_list)
         recyclerView.adapter = movieAdapter
+
         val movieRepository = (application as MovieApplication).movieRepository
         val movieViewModel = ViewModelProvider(
             this, object : ViewModelProvider.Factory {
@@ -32,25 +40,49 @@ class MainActivity : AppCompatActivity() {
                     return MovieViewModel(movieRepository) as T
                 }
             })[MovieViewModel::class.java]
-        movieViewModel.popularMovies.observe(this) { popularMovies ->
-            val currentYear =
-                Calendar.getInstance().get(Calendar.YEAR).toString()
-            movieAdapter.addMovies(
-                popularMovies
-                    .filter { movie ->
-                        // aman dari null
-                        movie.releaseDate?.startsWith(currentYear) == true
+
+        // --- KODE BARU (MENGGANTIKAN LIVEDATA OBSERVE) ---
+        // fetch movies from the API
+        // lifecycleScope is a lifecycle-aware coroutine scope
+        lifecycleScope.launch {
+            // repeatOnLifecycle is a lifecycle-aware coroutine builder
+            // Lifecycle.State.STARTED means that the coroutine will run
+            // when the activity is started
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+
+                // Coroutine 1: Collect Movies
+                launch {
+                    // collect the list of movies from the StateFlow
+                    movieViewModel.popularMovies.collect { movies ->
+                        // Logika filter tahun & sorting (dipertahankan dari kode lama)
+                        val currentYear = Calendar.getInstance().get(Calendar.YEAR).toString()
+                        val filteredMovies = movies
+                            .filter { movie ->
+                                movie.releaseDate?.startsWith(currentYear) == true
+                            }
+                            .sortedByDescending { it.popularity }
+
+                        // add the list of movies to the adapter
+                        movieAdapter.addMovies(filteredMovies)
                     }
-                    .sortedByDescending { it.popularity }
-            )
-        }
-        movieViewModel.error.observe(this) { error ->
-            if (error.isNotEmpty()) {
-                Snackbar.make(recyclerView, error, Snackbar.LENGTH_LONG).show()
+                }
+
+                // Coroutine 2: Collect Error
+                launch {
+                    // collect the error message from the StateFlow
+                    movieViewModel.error.collect { error ->
+                        // if an error occurs, show a Snackbar with the error message
+                        if (error.isNotEmpty()) {
+                            Snackbar.make(
+                                recyclerView, error, Snackbar.LENGTH_LONG
+                            ).show()
+                        }
+                    }
+                }
             }
         }
+        // --- BATAS KODE BARU ---
     }
-
 
     private fun openMovieDetails(movie: Movie) {
         val intent = Intent(this, DetailsActivity::class.java).apply {
