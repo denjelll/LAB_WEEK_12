@@ -4,6 +4,9 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
+        <import type="java.util.List" />
+        <import type="com.example.test_lab_week_13.model.Movie" />
+
         <variable
             name="viewModel"
             type="com.example.test_lab_week_13.MovieViewModel" />

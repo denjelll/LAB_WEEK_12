@@ -1,6 +1,8 @@
 package com.example.test_lab_week_13
 
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.example.test_lab_week_13.model.Movie
 import kotlinx.coroutines.Dispatchers
@@ -16,11 +18,14 @@ class MovieViewModel(private val movieRepository: MovieRepository) : ViewModel()
         fetchPopularMovies()
     }
 
-    // StateFlow untuk list film
+    // 1. Private tetap MutableStateFlow (agar bisa di-update nilainya di logic bawah)
     private val _popularMovies = MutableStateFlow<List<Movie>>(emptyList())
-    val popularMovies: StateFlow<List<Movie>> = _popularMovies
 
-    // StateFlow untuk error
+    // 2. Public (yang dibaca XML) diubah jadi LiveData menggunakan .asLiveData()
+    // Ini akan otomatis membuka bungkus StateFlow dan mengirim List<Movie> ke XML
+    val popularMovies: LiveData<List<Movie>> = _popularMovies.asLiveData()
+
+    // StateFlow untuk error (Biarkan StateFlow tidak apa-apa jika tidak dipakai di BindingAdapter)
     private val _error = MutableStateFlow("")
     val error: StateFlow<String> = _error
 
@@ -32,17 +37,15 @@ class MovieViewModel(private val movieRepository: MovieRepository) : ViewModel()
                 }
                 .collect { movies ->
                     // --- ASSIGNMENT LOGIC START ---
-                    // 1. Ambil tahun saat ini
                     val currentYear = Calendar.getInstance().get(Calendar.YEAR).toString()
 
-                    // 2. Lakukan Filter (Tahun ini) & Sorting (Popularitas Tertinggi)
                     val filteredAndSortedMovies = movies
                         .filter { movie ->
                             movie.releaseDate?.startsWith(currentYear) == true
                         }
                         .sortedByDescending { it.popularity }
 
-                    // 3. Masukkan data yang sudah diproses ke StateFlow
+                    // Logic update tetap sama, update variabel private-nya
                     _popularMovies.value = filteredAndSortedMovies
                     // --- ASSIGNMENT LOGIC END ---
                 }
